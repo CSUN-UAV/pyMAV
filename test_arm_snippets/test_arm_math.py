@@ -1,38 +1,38 @@
-import sched, time, math
+sched, time, math
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 from pymavlink import mavutil # Needed for command message definitions
 
 flightalt = 20 #This is how high you want it to fly to
-vehicle = connect('0.0.0.0:14550')
+vehicle = connect('/dev/ttyUSB0', baud=57600)
 time.sleep(10)
 vehicle.channels.overrides = {}
 
 def arm_and_takeoffNoGPS(Target):
 
 #Arm the vehicle
-    vehicle.mode    = VehicleMode("Guided_NoGPS")
-while not vehicle.is_armable: #Wait for the vehicle to be armable
-    time.sleep(.5)
+    	vehicle.mode    = VehicleMode("Guided_NoGPS")
+	while not vehicle.is_armable: #Wait for the vehicle to be armable
+    		time.sleep(.5)
 
-vehicle.armed = True
-while not vehicle.armed:
-    time.sleep(1)#Waiting for armed
+	vehicle.armed = True
+	while not vehicle.armed:
+    		time.sleep(1)#Waiting for armed
 #Take Off
-thrust = 0.7
-while True:
-    current_altitude = vehicle.location.global_relative_frame.alt
-    if current_altitude >= Target*0.95:
-        break
-    elif current_altitude >= Target*0.6:
-        thrust = 0.6
-    set_attitude(thrust = thrust)
-    time.sleep(0.2)
+	thrust = 0.7
+	while True:
+    		current_altitude = vehicle.location.global_relative_frame.alt
+    		if current_altitude >= Target*0.95:
+        		break
+    		elif current_altitude >= Target*0.6:
+        		thrust = 0.6
+    		set_attitude(thrust = thrust)
+    		time.sleep(0.2)
 
 def set_attitude(roll_angle = 0.0, pitch_angle = 0.0, yaw_rate = 0.0, thrust = 0.5, duration = 0):
 
 #Duration is seconds to do this for
 
-msg = vehicle.message_factory.set_attitude_target_encode(
+	msg = vehicle.message_factory.set_attitude_target_encode(
     0,
     0,                                         #target system
     0,                                         #target component
@@ -43,19 +43,19 @@ msg = vehicle.message_factory.set_attitude_target_encode(
     math.radians(yaw_rate),                    #body yaw rate in radian
     thrust)                                    #thrust
 
-vehicle.send_mavlink(msg)
+	vehicle.send_mavlink(msg)
 
-if duration != 0:
+	if duration != 0:
         # Divide the duration into the frational and integer parts
-        modf = math.modf(duration)
+       		modf = math.modf(duration)
         
         # Sleep for the fractional part
-        time.sleep(modf[0])
+       		time.sleep(modf[0])
         
         # Send command to vehicle on 1 Hz cycle
-        for x in range(0,int(modf[1])):
-            time.sleep(1)
-            vehicle.send_mavlink(msg)
+        	for x in range(0,int(modf[1])):
+            		time.sleep(1)
+            		vehicle.send_mavlink(msg)
 
 def to_quaternion(roll = 0.0, pitch = 0.0, yaw = 0.0):
     """
