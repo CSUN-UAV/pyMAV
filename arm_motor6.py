@@ -161,7 +161,7 @@ def goto_position_target_global_int(aLocation):
 		aLocation.alt, # alt - Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT
 		0, # X velocity in NED frame in m/s
 		0, # Y velocity in NED frame in m/s
-		0, # Z velocity in NED frame in m/s
+		0.5, # Z velocity in NED frame in m/s
 		0, 0, 0, # afx, afy, afz acceleration (not supported yet, ignored in GCS_Mavlink)
 		0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink) 
 	# send command to vehicle
@@ -184,17 +184,19 @@ def to_quaternion(roll = 0.0, pitch = 0.0, yaw = 0.0):
 	z = t1 * t2 * t4 - t0 * t3 * t5
 
 	return [w, x, y, z]
-# arm_and_takeoff(1)
+vehicle.groundspeed = 5
+
+arm_and_takeoff(1)
 
 # Copter should arm in GUIDED mode
-vehicle.mode    = VehicleMode("GUIDED_NOGPS")
-vehicle.armed   = True
+# vehicle.mode    = VehicleMode("GUIDED_NOGPS")
+# vehicle.armed   = True
 
-# Confirm vehicle armed before attempting to take off
-while not vehicle.armed:
-	print " Waiting for vehicle to arm..."
-	vehicle.armed = True
-	time.sleep(1)
+# # Confirm vehicle armed before attempting to take off
+# while not vehicle.armed:
+# 	print " Waiting for vehicle to arm..."
+# 	vehicle.armed = True
+# 	time.sleep(1)
 
-print("Hold position for 3 seconds")
-set_attitude(duration = 3)
+# print("Hold position for 3 seconds")
+# set_attitude(duration = 3)
