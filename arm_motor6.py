@@ -7,15 +7,19 @@ print("Connecting to...% s" % connection_string)
 vehicle = connect(connection_string, baud=57600,wait_ready=True)
 a_location = LocationGlobalRelative(-34.364114, 149.166022, 30)
 
-def arm_and_takeoff(aTargetAltitude):
+import threading
+
+def arm_and_takeoff_no_gps(aTargetAltitude):
 	"""
 	Arms vehicle and fly to aTargetAltitude.
 	"""
 	##### CONSTANTS #####
-	DEFAULT_TAKEOFF_THRUST = 0.501
-	SMOOTH_TAKEOFF_THRUST = 0.45
+	DEFAULT_TAKEOFF_THRUST = 0.65
+	SMOOTH_TAKEOFF_THRUST = 0.55
+
 	print "Arming motors"
-	# Copter should arm in GUIDED mode
+
+	# Copter should arm in GUIDED no gps mode
 	vehicle.mode    = VehicleMode("GUIDED_NOGPS")
 	vehicle.armed   = True
 
@@ -24,21 +28,23 @@ def arm_and_takeoff(aTargetAltitude):
 		print " Waiting for vehicle to arm..."
 		vehicle.armed = True
 		time.sleep(1)
+
 	print "Taking off!"
+
 	thrust = DEFAULT_TAKEOFF_THRUST
+
 	while True:
 		current_altitude = vehicle.location.global_relative_frame.alt
-		print "Global Location (relative altitude): %s" % vehicle.location.global_relative_frame
-		print "Altitude relative to home_location: %s" % vehicle.location.global_relative_frame.alt
 		print(" Altitude: %f  Desired: %f" %
 			  (current_altitude, aTargetAltitude))
 		if current_altitude >= aTargetAltitude*0.95: # Trigger just below target alt.
+			thrust = 0.5
 			print("Reached target altitude")
 			break
 		elif current_altitude >= aTargetAltitude*0.6:
 			thrust = SMOOTH_TAKEOFF_THRUST
 		set_attitude(thrust = thrust)
-		time.sleep(1)
+		time.sleep(0.4)
 
 def send_attitude_target(roll_angle = 0.0, pitch_angle = 0.0,
 						 yaw_angle = None, yaw_rate = 0.0, use_yaw_rate = False,
@@ -184,9 +190,57 @@ def to_quaternion(roll = 0.0, pitch = 0.0, yaw = 0.0):
 	z = t1 * t2 * t4 - t0 * t3 * t5
 
 	return [w, x, y, z]
-vehicle.groundspeed = 5
 
-arm_and_takeoff(1)
+def altitude_holder(target_altitude):
+    ACCEPTABLE_ALTITUDE_ERROR = 0.15
+    global current_thrust
+    
+    print("Altitdude holer started")
+    while(vehicle.mode != "LAND"):
+        current_altitude = vehicle.location.global_relative_frame.alt
+        print(" Altitude: %f Target Altitude: %f " % (current_altitude, target_altitude))
+        print " Attitude: %s" % vehicle.attitude
+        #print " Velocity: %s" % vehicle.velocity
+        #print " Groundspeed: %s" % vehicle.groundspeed    # settable
+
+        if(current_altitude < target_altitude - ACCEPTABLE_ALTITUDE_ERROR):
+            current_thrust += 0.01
+            current_thrust = 0.65 if current_thrust > 0.65 else current_thrust
+            print("THRUST UP")
+        elif(current_altitude > target_altitude + ACCEPTABLE_ALTITUDE_ERROR):
+            current_thrust -= 0.01
+            current_thrust = 0.35 if current_thrust < 0.35 else current_thrust
+            print("THRUST DOWN")
+        else:
+            current_thrust = 0.5
+            print("THRUST HOLD")
+
+        #set_thrust(current_thrust)
+        time.sleep(0.1)
+
+TARGET_ALTIDUDE = 1.5
+
+arm_and_takeoff_no_gps(TARGET_ALTIDUDE)
+
+t = threading.Thread(target=altitude_holder, args=(TARGET_ALTIDUDE,))
+t.daemon = True
+t.start()
+
+print("Hold position for 3 seconds")
+set_attitude(duration = 3)
+
+print("Setting LAND mode...")
+vehicle.mode = VehicleMode("LAND")
+time.sleep(1)
+
+
+# Close vehicle object before exiting script
+print("Close vehicle object")
+vehicle.close()
+
+
+print("Completed")
+
 
 # Copter should arm in GUIDED mode
 # vehicle.mode    = VehicleMode("GUIDED_NOGPS")
