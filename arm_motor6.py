@@ -2,7 +2,7 @@ from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelativ
 from pymavlink import mavutil # Needed for command message definitions
 import sched, time, math
 
-connection_string = "/dev/ttyUSB0"
+connection_string = "/dev/serial0"
 print("Connecting to...% s" % connection_string)
 vehicle = connect(connection_string, baud=57600,wait_ready=True)
 a_location = LocationGlobalRelative(-34.364114, 149.166022, 30)
@@ -218,7 +218,7 @@ def altitude_holder(target_altitude):
         #set_thrust(current_thrust)
         time.sleep(0.1)
 
-TARGET_ALTIDUDE = 1.5
+TARGET_ALTIDUDE = 0.5
 
 arm_and_takeoff_no_gps(TARGET_ALTIDUDE)
 
