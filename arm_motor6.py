@@ -1,10 +1,10 @@
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 from pymavlink import mavutil # Needed for command message definitions
 import sched, time, math
-
+from flight_assist import send_velocity
 connection_string = "/dev/serial0"
 print("Connecting to...% s" % connection_string)
-vehicle = connect(connection_string, baud=57600,wait_ready=True)
+vehicle = connect(connection_string, baud=57600,wait_ready=False)
 a_location = LocationGlobalRelative(-34.364114, 149.166022, 30)
 
 import threading
@@ -99,54 +99,54 @@ def set_attitude(roll_angle = 0.0, pitch_angle = 0.0,
 						 0, 0, True,
 						 thrust)
 
-	# vehicle.simple_takeoff(aTargetAltitude) # Take off to target altitude
-	# # Check that vehicle has reached takeoff altitude
-	# while True:
-	# 	print " Altitude: ", vehicle.location.global_relative_frame.alt 
-	# 	#Break and return from function just below target altitude.        
-	# 	if vehicle.location.global_relative_frame.alt>=aTargetAltitude*0.95: 
-	# 		print "Reached target altitude"
-	# 		break
-	# 	vehicle.simple_goto(a_location)
-	# time.sleep(1)
-	# thrust = 0.7
-	# while True:
-	# 	current_altitude = vehicle.location.global_relative_frame.alt
-	# 	if current_altitude >= aTargetAltitude*0.95:
-	# 		break
-	# 	elif current_altitude >= aTargetAltitude*0.6:
-	# 		thrust = 0.6
-	# 	# set_attitude(thrust = thrust)
-	# 	time.sleep(1)
+	 vehicle.simple_takeoff(aTargetAltitude) # Take off to target altitude
+	  Check that vehicle has reached takeoff altitude
+	 while True:
+	 	print " Altitude: ", vehicle.location.global_relative_frame.alt 
+	 	#Break and return from function just below target altitude.        
+	 	if vehicle.location.global_relative_frame.alt>=aTargetAltitude*0.95: 
+	 		print "Reached target altitude"
+	 		break
+	 	vehicle.simple_goto(a_location)
+	 time.sleep(1)
+	 thrust = 0.7
+	 while True:
+	 	current_altitude = vehicle.location.global_relative_frame.alt
+	 	if current_altitude >= aTargetAltitude*0.95:
+	 		break
+	 	elif current_altitude >= aTargetAltitude*0.6:
+	 		thrust = 0.6
+	 	 set_attitude(thrust = thrust)
+		 	time.sleep(1)
 
-def set_attitude(roll_angle = 0.0, pitch_angle = 0.0, yaw_rate = 0.0, thrust = 0.5, duration = 0):
+#def set_attitude(roll_angle = 0.0, pitch_angle = 0.0, yaw_rate = 0.0, thrust = 0.5, duration = 0):
 
 	#Duration is seconds to do this for
 
-	msg = vehicle.message_factory.set_attitude_target_encode(
-		0,
-		0,                                         #target system
-		0,                                         #target component
-		0b00000000,                                #type mask: bit 1 is LSB
-		to_quaternion(roll_angle, pitch_angle),    #q
-		0,                                         #body roll rate in radian
-		0,                                         #body pitch rate in radian
-		math.radians(yaw_rate),                    #body yaw rate in radian
-		thrust)                                    #thrust
+#	msg = vehicle.message_factory.set_attitude_target_encode(
+	#	0,
+	# 	0,                                         #target system
+	# 	0,                                         #target component
+	# 	0b00000000,                                #type mask: bit 1 is LSB
+	# 	to_quaternion(roll_angle, pitch_angle),    #q
+	# 	0,                                         #body roll rate in radian
+	# 	0,                                         #body pitch rate in radian
+	# 	math.radians(yaw_rate),                    #body yaw rate in radian
+	# 	thrust)                                    #thrust
 
-	vehicle.send_mavlink(msg)
+	# vehicle.send_mavlink(msg)
 
-	if duration != 0:
-		# Divide the duration into the frational and integer parts
-		modf = math.modf(duration)
+	# if duration != 0:
+	# 	# Divide the duration into the frational and integer parts
+	# 	modf = math.modf(duration)
 		
-		# Sleep for the fractional part
-		time.sleep(modf[0])
+	# 	# Sleep for the fractional part
+	# 	time.sleep(modf[0])
 		
-		# Send command to vehicle on 1 Hz cycle
-		for x in range(0,int(modf[1])):
-			time.sleep(1)
-			vehicle.send_mavlink(msg)
+	# 	# Send command to vehicle on 1 Hz cycle
+	# 	for x in range(0,int(modf[1])):
+	# 		time.sleep(1)
+	# 		vehicle.send_mavlink(msg)
 
 def goto_position_target_global_int(aLocation):
 	"""
@@ -192,31 +192,31 @@ def to_quaternion(roll = 0.0, pitch = 0.0, yaw = 0.0):
 	return [w, x, y, z]
 
 def altitude_holder(target_altitude):
-    ACCEPTABLE_ALTITUDE_ERROR = 0.15
-    global current_thrust
-    
-    print("Altitdude holer started")
-    while(vehicle.mode != "LAND"):
-        current_altitude = vehicle.location.global_relative_frame.alt
-        print(" Altitude: %f Target Altitude: %f " % (current_altitude, target_altitude))
-        print " Attitude: %s" % vehicle.attitude
-        #print " Velocity: %s" % vehicle.velocity
-        #print " Groundspeed: %s" % vehicle.groundspeed    # settable
+	ACCEPTABLE_ALTITUDE_ERROR = 0.15
+	global current_thrust
+	
+	print("Altitdude holer started")
+	while(vehicle.mode != "LAND"):
+		current_altitude = vehicle.location.global_relative_frame.alt
+		print(" Altitude: %f Target Altitude: %f " % (current_altitude, target_altitude))
+		print " Attitude: %s" % vehicle.attitude
+		#print " Velocity: %s" % vehicle.velocity
+		#print " Groundspeed: %s" % vehicle.groundspeed    # settable
 
-        if(current_altitude < target_altitude - ACCEPTABLE_ALTITUDE_ERROR):
-            current_thrust += 0.01
-            current_thrust = 0.65 if current_thrust > 0.65 else current_thrust
-            print("THRUST UP")
-        elif(current_altitude > target_altitude + ACCEPTABLE_ALTITUDE_ERROR):
-            current_thrust -= 0.01
-            current_thrust = 0.35 if current_thrust < 0.35 else current_thrust
-            print("THRUST DOWN")
-        else:
-            current_thrust = 0.5
-            print("THRUST HOLD")
+		if(current_altitude < target_altitude - ACCEPTABLE_ALTITUDE_ERROR):
+			current_thrust += 0.01
+			current_thrust = 0.65 if current_thrust > 0.65 else current_thrust
+			print("THRUST UP")
+		elif(current_altitude > target_altitude + ACCEPTABLE_ALTITUDE_ERROR):
+			current_thrust -= 0.01
+			current_thrust = 0.35 if current_thrust < 0.35 else current_thrust
+			print("THRUST DOWN")
+		else:
+			current_thrust = 0.5
+			print("THRUST HOLD")
 
-        #set_thrust(current_thrust)
-        time.sleep(0.1)
+		#set_thrust(current_thrust)
+		time.sleep(0.1)
 
 TARGET_ALTIDUDE = 0.5
 
@@ -232,6 +232,28 @@ set_attitude(duration = 3)
 print("Setting LAND mode...")
 vehicle.mode = VehicleMode("LAND")
 time.sleep(1)
+
+########WILL POST LANDING FUNCTION HERE
+
+def land(vehicle):
+	while not vehicle.location.global_relative_frame.alt==0:
+		if(vehicle.location.global_relative_frame.alt <= .25):
+			print("OUR ALTITUDE IS NOW LESS THAN 25m")
+			vehicle.mode = VehicleMode('LAND')
+			send_velocity(vehicle, 0, 0, -0.25, 1)
+		elif(vehicle.location.global_relative_frame.alt > 30):
+			print("OUR ALTITUDE IS NOW MORE THAN 25m")
+			vehicle.mode = VehicleMode('LAND')
+			send_velocity(vehicle, 0, 0, -0.25, 1)
+		else:
+			send_velocity(vehicle, 0, 0, -0.25, 1)
+
+
+
+
+
+land(vehicle)
+##########
 
 
 # Close vehicle object before exiting script
