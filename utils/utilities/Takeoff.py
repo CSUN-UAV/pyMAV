@@ -1,17 +1,30 @@
+from Attitude import Attitude
+from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
+from pymavlink import mavutil # Needed for command message definitions
+import sched, time, math
+
 class Takeoff:
     def __init__(self):
+        self.attitude = Attitude()
         pass
 
     def simple_drone_takeoff(self):
         pass
     
-    def original_drone_takeoff_no_gps(self, target_altitude):
+    def original_drone_takeoff_no_gps(self, target_altitude, vehicle=None):
 	    ##### CONSTANTS #####
         DEFAULT_TAKEOFF_THRUST = 0.65
         SMOOTH_TAKEOFF_THRUST = 0.55
 
-        print "Arming motors, no gps"
+        # simulation needed?
+        while not vehicle.is_armable:
+            print(" Waiting for vehicle to initialise...")
+            time.sleep(1)
+        
+        print "Arming motors, NO GPS"
 
+        # SIMULATION NEEDS GUIDED MODE
+        # vehicle.mode    = VehicleMode("GUIDED")
         vehicle.mode    = VehicleMode("GUIDED_NOGPS")
         vehicle.armed   = True
 
@@ -33,7 +46,7 @@ class Takeoff:
                 break
             elif current_altitude >= target_altitude*0.6:
                 thrust = SMOOTH_TAKEOFF_THRUST
-            set_attitude(thrust = thrust)
+            self.attitude.set_attitude(thrust = thrust, vehicle=vehicle, target_altitude=target_altitude)
             time.sleep(0.1)
 
     def original_drone_takeoff_gps(self):
