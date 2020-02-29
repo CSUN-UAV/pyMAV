@@ -8,8 +8,32 @@ class Takeoff:
         self.attitude = Attitude()
         pass
 
-    def simple_drone_takeoff(self):
-        pass
+    def drone_takeoff_with_gps(self, target_altitude=0, vehicle=None ):
+        print("Basic pre-arm checks")
+        # Don't let the user try to arm until autopilot is ready
+        while not vehicle.is_armable:
+            print(" Waiting for vehicle to initialise...")
+            time.sleep(1)
+            
+        print("Arming motors")
+        vehicle.mode = VehicleMode("GUIDED")
+        vehicle.armed = True
+
+        while not vehicle.armed:      
+            print(" Waiting to arm")
+            time.sleep(0.4)
+
+        print("Taking off!")
+        vehicle.simple_takeoff(target_altitude)
+
+        # Wait until the vehicle reaches a safe height before processing the goto (otherwise the command 
+        #  after Vehicle.simple_takeoff will execute immediately).
+        while True:
+            print(" Altitude: ", vehicle.location.global_relative_frame.alt, "Want: ", target_altitude)      
+            if vehicle.location.global_relative_frame.alt>=target_altitude*0.95: #Trigger just below target alt.
+                print("Reached target altitude")
+                break
+            time.sleep(0.3)
     
     def original_drone_takeoff_no_gps(self, target_altitude, vehicle=None):
 	    ##### CONSTANTS #####

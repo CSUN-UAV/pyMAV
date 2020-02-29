@@ -1,6 +1,6 @@
-from Utils import Utils
 from dronekit import connect
-
+import sys
+from Utils import Utils
 class Drone:
     def __init__(self):
         self.utils = Utils()

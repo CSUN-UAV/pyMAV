@@ -1,4 +1,4 @@
-from utilities import Attitude, Takeoff, Connect, Hover, Landing
+from utilities import Attitude, Takeoff, Connect, Hover, Landing, GoTo
 import sys
 
 # from Attitude import Attitude
@@ -10,5 +10,6 @@ class Utils:
         self.connect = Connect.Connect()
         self.hover = Hover.Hover()
         self.landing = Landing.Landing()
+        self.goto = GoTo.GoTo()
     def hello(self):
         return "hello"

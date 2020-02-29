@@ -16,7 +16,6 @@ def test():
     sitl = dronekit_sitl.start_default()
     print("ready to arm")
     simulation.Drone.utils.takeoff.original_drone_takeoff_no_gps(target_altitude=1, vehicle=simulation.Drone.vehicle)
-    simulation.Drone.utils.takeoff.original_drone_takeoff_no_gps(target_altitude=1, vehicle=simulation.Drone.vehicle)
     print("ready to hover")
     simulation.Drone.utils.hover.original_hover_no_gps(duration=3, vehicle=simulation.Drone.vehicle, target_altitude=1)
     print("ready to land")
