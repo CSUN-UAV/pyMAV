@@ -14,5 +14,5 @@ class Landing:
                 print("Switching to Landing mode...")
                 vehicle.mode = VehicleMode('LAND')
             Mavlink.send_velocity(vehicle=vehicle, velocity_x=0, velocity_y=0, velocity_z=0.25)
-            time.sleep(0.1)
+            time.sleep(0.2)
         print("Landed")
