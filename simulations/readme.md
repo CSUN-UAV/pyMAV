@@ -1,6 +1,6 @@
 to run simulations...
 
-dronekit-sitl copter --home=YOUR,COORDINATES
+dronekit-sitl copter --home=YOUR,COORDINATES,0,0
 
 mavproxy.py --master tcp:127.0.0.1:5760 --out udp:127.0.0.1:14551 --out udp:127.0.0.1:14550
 
