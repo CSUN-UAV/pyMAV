@@ -7,6 +7,6 @@ class Connect:
     def connect_tcp(self):
         return '127.0.0.1:5760'
     def connect_serial(self):
-        return 'serial0'
+        return '/dev/serial0'
     def connect_usb(self):
-        return 'ttyUSB0'
+        return '/dev/ttyUSB0'
