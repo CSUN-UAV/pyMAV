@@ -1,4 +1,4 @@
-from utilities import Attitude, Takeoff, Connect, Hover, Landing, GoTo
+from utils.utilities import Attitude, Takeoff, Connect, Hover, Landing, GoTo
 import sys
 
 # from Attitude import Attitude

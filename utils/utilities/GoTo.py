@@ -16,25 +16,28 @@ class GoTo:
         print(targetLocation, "targetloc")
         targetDistance = self.get_distance_metres(currentLocation, targetLocation)
         vehicle.simple_goto(targetLocation)
+        vehicle.groundspeed=0.1
         while vehicle.mode.name=="GUIDED": #Stop action if we are no longer in guided mode.
+            vehicle.groundspeed=0.1
             remainingDistance=self.get_distance_metres(vehicle.location.global_relative_frame, targetLocation)
             print("Distance to target: ", remainingDistance)
             if remainingDistance<=targetDistance*0.1: #Just below target, in case of undershoot.
                 print("Reached target, returning...")
                 break;
-            time.sleep(0.25)
+            time.sleep(0.35)
     
     def return_home(self, vehicle=None):
         current_location = vehicle.location.global_relative_frame
         vehicle.simple_goto(self.original_location)
         targetDistance = self.get_distance_metres(current_location, self.original_location)
+        vehicle.groundspeed=0.1
         while vehicle.mode.name=="GUIDED":
             remaining_dist = self.get_distance_metres(vehicle.location.global_relative_frame, self.original_location)
             print("Distance to home: ", remaining_dist)
             if remaining_dist <= targetDistance * 0.1:
                 print("returned home.")
                 break
-            time.sleep(0.25)
+            time.sleep(0.35)
                 
 
 
