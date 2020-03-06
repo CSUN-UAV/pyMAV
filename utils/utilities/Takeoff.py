@@ -35,13 +35,13 @@ class Takeoff:
                 break
             time.sleep(0.3)
     
-    def goToAltitude(self, vehicle=None, target_altitude):
-        while True:
-            print(" Altitude: ", vehicle.location.global_relative_frame.alt, "Want: ", target_altitude)      
-            if vehicle.location.global_relative_frame.alt>=target_altitude*0.95: #Trigger just below target alt.
-                print("Reached target altitude")
-                break
-            time.sleep(0.3)
+    # def goToAltitude(self, vehicle=None, target_altitude):
+    #     while True:
+    #         print(" Altitude: ", vehicle.location.global_relative_frame.alt, "Want: ", target_altitude)      
+    #         if vehicle.location.global_relative_frame.alt>=target_altitude*0.95: #Trigger just below target alt.
+    #             print("Reached target altitude")
+    #             break
+    #         time.sleep(0.3)
 
     
     def original_drone_takeoff_no_gps(self, target_altitude, vehicle=None):
