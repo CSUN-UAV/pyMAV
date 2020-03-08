@@ -1,4 +1,4 @@
-from utils.utilities import Attitude, Takeoff, Connect, Hover, Landing, GoTo
+from utils.utilities import Attitude, Takeoff, Connect, Hover, Landing, GoTo, ChangeAltitude
 import sys
 
 # from Attitude import Attitude
@@ -11,5 +11,6 @@ class Utils:
         self.hover = Hover.Hover()
         self.landing = Landing.Landing()
         self.goto = GoTo.GoTo()
+        self.change_altitude = ChangeAltitude.ChangeAltitude()
     def hello(self):
         return "hello"

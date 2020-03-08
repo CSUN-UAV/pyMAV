@@ -37,7 +37,10 @@ class GoTo:
             if remaining_dist <= targetDistance * 0.1:
                 print("returned home.")
                 break
-            time.sleep(0.35)
+            if remaining_dist <= 1.0:
+                time.sleep(0.5)
+            else:
+                time.sleep(0.35)
                 
 
 

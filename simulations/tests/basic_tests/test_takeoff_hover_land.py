@@ -1,6 +1,5 @@
 import sys, os.path
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-
+sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 from Simulation import Simulation
 
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative

@@ -4,48 +4,48 @@ class Attitude:
     def __init__(self):
         pass
 
-    def set_attitude(self,roll_angle = 0.0, pitch_angle = 0.0,
-                    yaw_angle = None, yaw_rate = 0.0, use_yaw_rate = False,
-                    thrust = 0.5, duration = 0, vehicle=None, target_altitude=0):
-        """
-        Note that from AC3.3 the message should be re-sent more often than every
-        second, as an ATTITUDE_TARGET order has a timeout of 1s.
-        In AC3.2.1 and earlier the specified attitude persists until it is canceled.
-        The code below should work on either version.
-        Sending the message multiple times is the recommended way.
-        """
-        self.send_attitude_target(roll_angle, pitch_angle,
-                            yaw_angle, yaw_rate, False,
-                            thrust, vehicle=vehicle)
-        start = time.time()
-        while time.time() - start < duration:
-            self.send_attitude_target(roll_angle, pitch_angle,
-                                yaw_angle, yaw_rate, False,
-                                thrust, vehicle=vehicle)
-            time.sleep(0.1)
-        # Reset attitude, or it will persist for 1s more due to the timeout
-        self.send_attitude_target(0, 0,
-                            0, 0, True,
-                            thrust, vehicle=vehicle)
+    # def set_attitude(self,roll_angle = 0.0, pitch_angle = 0.0,
+    #                 yaw_angle = None, yaw_rate = 0.0, use_yaw_rate = False,
+    #                 thrust = 0.5, duration = 0, vehicle=None, target_altitude=0):
+    #     """
+    #     Note that from AC3.3 the message should be re-sent more often than every
+    #     second, as an ATTITUDE_TARGET order has a timeout of 1s.
+    #     In AC3.2.1 and earlier the specified attitude persists until it is canceled.
+    #     The code below should work on either version.
+    #     Sending the message multiple times is the recommended way.
+    #     """
+    #     self.send_attitude_target(roll_angle, pitch_angle,
+    #                         yaw_angle, yaw_rate, False,
+    #                         thrust, vehicle=vehicle)
+    #     start = time.time()
+    #     while time.time() - start < duration:
+    #         self.send_attitude_target(roll_angle, pitch_angle,
+    #                             yaw_angle, yaw_rate, False,
+    #                             thrust, vehicle=vehicle)
+    #         time.sleep(0.1)
+    #     # Reset attitude, or it will persist for 1s more due to the timeout
+    #     self.send_attitude_target(0, 0,
+    #                         0, 0, True,
+    #                         thrust, vehicle=vehicle)
 
-        vehicle.simple_takeoff(target_altitude) # Take off to target altitude
-        # Check that vehicle has reached takeoff altitude
-        while True:
-            print " Altitude: ", vehicle.location.global_relative_frame.alt 
-            #Break and return from function just below target altitude.        
-            if vehicle.location.global_relative_frame.alt>=target_altitude*0.95: 
-                print "Reached target altitude"
-                break
-        time.sleep(1)
-        thrust = 0.7
-        while True:
-            current_altitude = vehicle.location.global_relative_frame.alt
-            if current_altitude >= target_altitude*0.95:
-                break
-            elif current_altitude >= target_altitude*0.6:
-                thrust = 0.6
-            set_attitude(thrust = thrust)
-            time.sleep(.1)
+    #     vehicle.simple_takeoff(target_altitude) # Take off to target altitude
+    #     # Check that vehicle has reached takeoff altitude
+    #     while True:
+    #         print " Altitude: ", vehicle.location.global_relative_frame.alt 
+    #         #Break and return from function just below target altitude.        
+    #         if vehicle.location.global_relative_frame.alt>=target_altitude*0.95: 
+    #             print "Reached target altitude"
+    #             break
+    #     time.sleep(1)
+    #     thrust = 0.7
+    #     while True:
+    #         current_altitude = vehicle.location.global_relative_frame.alt
+    #         if current_altitude >= target_altitude*0.95:
+    #             break
+    #         elif current_altitude >= target_altitude*0.6:
+    #             thrust = 0.6
+    #         set_attitude(thrust = thrust)
+    #         time.sleep(.1)
 
     def send_attitude_target(self, roll_angle = 0.0, pitch_angle = 0.0,
                             yaw_angle = None, yaw_rate = 0.0, use_yaw_rate = False,
@@ -94,31 +94,24 @@ class Attitude:
 
         return [w, x, y, z]
 
-    # def set_attitude(roll_angle = 0.0, pitch_angle = 0.0, yaw_rate = 0.0, thrust = 0.5, duration = 0):
+    def set_attitude(self, roll_angle = 0.0, pitch_angle = 0.0,
+                    yaw_angle = None, yaw_rate = 0.0, use_yaw_rate = True,
+                    duration = 0, vehicle=None):
+        """
+        Note that from AC3.3 the message should be re-sent more often than every
+        second, as an ATTITUDE_TARGET order has a timeout of 1s.
+        In AC3.2.1 and earlier the specified attitude persists until it is canceled.
+        The code below should work on either version.
+        Sending the message multiple times is the recommended way.
+        """
 
-    #     # Duration is seconds to do this for
-
-    # 	msg = vehicle.message_factory.set_attitude_target_encode(
-    #     	0,
-    #     	0,                                         #target system
-    #     	0,                                         #target component
-    #     	0b00000000,                                #type mask: bit 1 is LSB
-    #     	to_quaternion(roll_angle, pitch_angle),    #q
-    #     	0,                                         #body roll rate in radian
-    #     	0,                                         #body pitch rate in radian
-    #     	math.radians(yaw_rate),                    #body yaw rate in radian
-    #     	thrust)                                    #thrust
-
-    #     vehicle.send_mavlink(msg)
-
-    #     if duration != 0:
-    #     	# Divide the duration into the frational and integer parts
-    #     	modf = math.modf(duration)
-            
-    #     	# Sleep for the fractional part
-    #     	time.sleep(modf[0])
-            
-    #     	# Send command to vehicle on 1 Hz cycle
-    #     	for x in range(0,int(modf[1])):
-    #     		time.sleep(1)
-    #     		vehicle.send_mavlink(msg)
+        self.send_attitude_target(roll_angle, pitch_angle,
+                            yaw_angle, yaw_rate, use_yaw_rate, vehicle=vehicle)
+        start = time.time()
+        while time.time() - start < duration:
+            self.send_attitude_target(roll_angle, pitch_angle,
+                                yaw_angle, yaw_rate, use_yaw_rate, vehicle=vehicle)
+            time.sleep(0.01)
+        # Reset attitude, or it will persist for 1s more due to the timeout
+        self.send_attitude_target(0, 0,
+                            0, 0, True, vehicle=vehicle)
