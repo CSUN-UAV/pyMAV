@@ -12,4 +12,4 @@ class Drone:
 
     def connect_vehicle_to_serial0(self):
         print("Connecting to vehicle on: %s" % (self.utils.connect.connect_serial(),))
-        self.vehicle = connect(self.utils.connect.connect_serial(), wait_ready=True)
+        self.vehicle = connect(self.utils.connect.connect_serial(), wait_ready=True, baud=57600)
