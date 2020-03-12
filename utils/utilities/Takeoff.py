@@ -41,9 +41,9 @@ class Takeoff:
         SMOOTH_TAKEOFF_THRUST = 0.55
 
         # simulation needed?
-        while not vehicle.is_armable:
-            print(" Waiting for vehicle to initialise...")
-            time.sleep(1)
+        # while not vehicle.is_armable:
+        #     print(" Waiting for vehicle to initialise...")
+        #     time.sleep(1)
         
         print "Arming motors, NO GPS"
 
@@ -70,8 +70,8 @@ class Takeoff:
                 break
             elif current_altitude >= target_altitude*0.6:
                 thrust = SMOOTH_TAKEOFF_THRUST
-            self.attitude.set_attitude(thrust = thrust, vehicle=vehicle, target_altitude=target_altitude)
-            time.sleep(0.1)
+            self.attitude.set_attitude(thrust = thrust, vehicle=vehicle)
+            time.sleep(0.2)
 
     def original_drone_takeoff_gps(self):
         pass

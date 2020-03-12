@@ -6,7 +6,7 @@ from Drone import Drone
 def main():
     drone = Drone()
 
-    target_altitude =  0.3
+    target_altitude =  0.5
 
     drone.connect_vehicle_to_serial0()
 
@@ -14,9 +14,9 @@ def main():
 
     drone.utils.hover.hover(duration=5, vehicle=drone.vehicle)
 
-    drone.utils.change_altitude.gainAltitude(vehicle=drone.vehicle)
+    # drone.utils.change_altitude.gainAltitude(vehicle=drone.vehicle)
 
-    drone.utils.hover.hover(duration=5, vehicle=drone.vehicle)
+    # drone.utils.hover.hover(duration=5, vehicle=drone.vehicle)
 
     drone.utils.landing.landing(vehicle=drone.vehicle)
 
