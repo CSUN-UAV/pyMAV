@@ -96,7 +96,7 @@ class Attitude:
 
     def set_attitude(self, roll_angle = 0.0, pitch_angle = 0.0,
                     yaw_angle = None, yaw_rate = 0.0, use_yaw_rate = True,
-                    duration = 0, vehicle=None):
+                    duration = 0, vehicle=None, thrust=0.5):
         """
         Note that from AC3.3 the message should be re-sent more often than every
         second, as an ATTITUDE_TARGET order has a timeout of 1s.
@@ -106,12 +106,12 @@ class Attitude:
         """
 
         self.send_attitude_target(roll_angle, pitch_angle,
-                            yaw_angle, yaw_rate, use_yaw_rate, vehicle=vehicle)
+                            yaw_angle, yaw_rate, use_yaw_rate, vehicle=vehicle, thrust=thrust)
         start = time.time()
         while time.time() - start < duration:
             self.send_attitude_target(roll_angle, pitch_angle,
-                                yaw_angle, yaw_rate, use_yaw_rate, vehicle=vehicle)
+                                yaw_angle, yaw_rate, use_yaw_rate, vehicle=vehicle, thrust=thrust)
             time.sleep(0.01)
         # Reset attitude, or it will persist for 1s more due to the timeout
         self.send_attitude_target(0, 0,
-                            0, 0, True, vehicle=vehicle)
+                            0, 0, True, vehicle=vehicle, thrust=thrust)

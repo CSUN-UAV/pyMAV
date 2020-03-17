@@ -3,8 +3,6 @@ from Utils import Utils
 import os
 import time
 
-from pathlib import Path
-
 class Drone:
     def __init__(self):
         self.utils = Utils()
@@ -32,6 +30,5 @@ class Drone:
 
     def connect_vehicle_to_serial0(self):
         print("Connecting to vehicle on: %s" % (self.utils.connect.connect_serial(),))
-        self.vehicle = connect(self.utils.connect.connect_serial(), wait_ready=True, baud=921600, heartbeat_timeout=60)
-        self.cleanv2()
+        self.vehicle = connect(self.utils.connect.connect_serial(), wait_ready=False, baud=57600, heartbeat_timeout=60)
 
