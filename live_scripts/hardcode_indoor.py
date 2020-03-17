@@ -67,17 +67,23 @@ def set_attitude(roll_angle = 0.0, pitch_angle = 0.0,
 		send_attitude_target(roll_angle, pitch_angle,
 							yaw_angle, yaw_rate, use_yaw_rate,
 							thrust)
-		time.sleep(0.01)
+		time.sleep(0.1)
 	# Reset attitude, or it will persist for 1s more due to the timeout
 	send_attitude_target(0, 0,
-						0, 0, True, thrust)
+						0, 0, True, thrust=thrust)
 
 def send_attitude_target(roll_angle = 0.0, pitch_angle = 0.0,
 						yaw_angle = None, yaw_rate = 0.0, use_yaw_rate = False,
 						thrust = 0.5):
-	if yaw_angle is None:
-		# this value may be unused by the vehicle, depending on use_yaw_rate
-		yaw_angle = vehicle.attitude.yaw
+
+    global current_thrust
+
+    if not use_yaw_rate and yaw_angle is None:
+        yaw_angle = vehicle.attitude.yaw
+
+    if yaw_angle is None:
+        yaw_angle = 0.0
+
 	# Thrust >  0.5: Ascend
 	# Thrust == 0.5: Hold the altitude
 	# Thrust <  0.5: Descend

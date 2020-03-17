@@ -11,15 +11,21 @@ def test():
     if simulation.Drone.vehicle:
         simulation.Drone.vehicle.close()
     simulation.Drone.connect_vehicle_to_test()
+    print("1")
 
     simulation.Drone.utils.takeoff.drone_takeoff_with_gps(target_altitude=3, vehicle=simulation.Drone.vehicle)
+    print("2")
 
     # simulation.Drone.utils.hover.original_hover_no_gps(duration=5, vehicle=simulation.Drone.vehicle, target_altitude=3)
 
     simulation.Drone.utils.goto.go_to_loc(vehicle=simulation.Drone.vehicle, North=5, East=0)
+    print("3")
 
     simulation.Drone.utils.goto.return_home(vehicle=simulation.Drone.vehicle)
+    print("4")
 
     simulation.Drone.utils.landing.land(vehicle=simulation.Drone.vehicle)
+    print("5")
+
     simulation.Drone.vehicle.close()
 test()
