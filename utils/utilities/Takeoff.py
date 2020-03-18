@@ -8,7 +8,7 @@ class Takeoff:
         self.attitude = Attitude()
         pass
 
-    def drone_takeoff_with_gps(self, target_altitude=0, vehicle=None ):
+    def drone_takeoff_with_gps(self, target_altitude=0.5, vehicle=None):
         print("Basic pre-arm checks")
         # Don't let the user try to arm until autopilot is ready
         while not vehicle.is_armable:

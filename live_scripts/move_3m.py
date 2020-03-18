@@ -8,11 +8,11 @@ def main():
 
     drone.connect_vehicle_to_serial0()
 
-    drone.utils.takeoff.drone_takeoff_with_gps()
+    drone.utils.takeoff.drone_takeoff_with_gps(vehicle=drone.vehicle)
 
-    drone.utils.goto.go_to_loc(vehicle=drone.vehicle, North=3, East=0)
+    # drone.utils.goto.go_to_loc(vehicle=drone.vehicle, North=3, East=0)
 
-    drone.utils.goto.return_home(vehicle=drone.vehicle)
+    # drone.utils.goto.return_home(vehicle=drone.vehicle)
 
     drone.utils.landing.land(vehicle=drone.vehicle)
 
